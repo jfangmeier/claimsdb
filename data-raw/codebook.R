@@ -106,6 +106,10 @@ codebook_df <-
       )
   ) %>% 
   arrange(ORDER, ROW) %>% 
-  select(-ORDER, -ROW)
+  select(
+    TABLE, 
+    VAR_NAME = VAR, 
+    VAR_DESCR = DESCR, 
+    VAR_TYPE = TYPE)
 
 write_rds(codebook_df, here::here("data-raw", "codebook.rds"))
