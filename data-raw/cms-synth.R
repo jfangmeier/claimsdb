@@ -16,6 +16,8 @@ schema <-
     "Bene", "BENE_YEAR", "Beneficiary Enrollment Year", "numeric"
   ) %>%
   bind_rows(codebook) %>%
+  mutate(VAR_NUM = parse_number(VAR_DESCR)) %>%
+  filter(is.na(VAR_NUM) | VAR_NUM <= 5) %>%
   select(
     TABLE,
     VARIABLE = VAR_NAME,
@@ -35,6 +37,8 @@ schema <-
   ) %>%
   select(TABLE, TABLE_TITLE, TABLE_DESCRIPTION, UNIT_OF_RECORD, PROPERTIES) %>%
   mutate(TABLE = str_to_lower(TABLE))
+
+write_rds(schema, here::here("data-raw", "schema.rds"))
 
 usethis::use_data(schema, overwrite = TRUE)
 

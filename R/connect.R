@@ -15,7 +15,7 @@
 #' )
 #'
 #' if (requireNamespace("dplyr", quietly = TRUE)) {
-#'   dplyr::tbl(con, "films")
+#'   dplyr::tbl(con, "bene")
 #' }
 #'
 #' # Disconnect from that database (shutdown is specific to duckdb)

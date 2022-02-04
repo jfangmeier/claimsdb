@@ -5,3 +5,4 @@
 .DS_Store
 data-raw/*.rds
 data-raw/*.zip
+data-raw/*.csv
