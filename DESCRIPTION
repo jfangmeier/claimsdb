@@ -1,10 +1,13 @@
 Package: claimsdb
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Title: Relational Data from the CMS Data Entrepreneurs Synthetic PUF for Learning and Teaching
+Version: 0.0.1
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+    person("Josh", "Fangmeier", , "jfangmeier@gmail.com", role = c("aut", "cre"))
+Description: Provides health insurance claims and enrollment data from the CMS Data Entrpreneurs
+    Synthetic PUF in a set of relational tables or as a database in 'DuckDB'.
+    This package includes data for 500 randomly selected Medicare beneficiaries 
+    from 2008. Full data files are available from CMS.
+    <https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF>.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
