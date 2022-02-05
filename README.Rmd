@@ -1,0 +1,167 @@
+---
+output: github_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# claimsdb
+
+<!-- badges: start -->
+
+[![CRAN
+status](https://www.r-pkg.org/badges/version/claimsdb)](https://CRAN.R-project.org/package=claimsdb)
+
+<!-- badges: end -->
+
+**claimsdb** provides easy access to a sample of health insurance
+enrollment and claims data from the [CMS 2008-2010 Data Entrepreneurs'
+Synthetic Public Use File
+(DE-SynPUF)](https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF),
+as a set of relational tables or as an in-memory database using
+[DuckDB](https://duckdb.org). This package is inspired by and based on
+the [starwarsdb](https://github.com/gadenbuie/starwarsdb) package.
+
+The data are structured as actual Medicare claims data but is fully
+"synthetic," after a process of alterations meant to reduce the risk of
+re-identification of real Medicare beneficiaries. The synthetic process
+that CMS adopted changes the co-variation across variables, so analysts
+should be cautious about drawing inferences about the actual Medicare
+population.
+
+The data included in **claimsdb** comes from 500 randomly selected
+Medicare beneficiaries from Sample 2 of the DE-SynPUF. CMS provides
+[resources](https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DESample02),
+including a codebook, FAQ, and other documents with more information
+about this data.
+
+[![Source: CMS Linkable 2008–2010 Medicare
+DE-SynPUF](man/figures/README-diagram.PNG "Source: CMS Linkable 2008–2010 Medicare DE-SynPUF")](https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/Downloads/SynPUF_DUG.pdf)
+
+**Formats:** [Metadata](#health-insurance-claims-data), [Local
+Tables](#local-tables), [Remote Database
+Tables](#remote-database-tables)
+
+## Installation
+
+You can install the development version of **claimsdb** from
+[GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("jfangmeier/claimsdb")
+```
+
+## Health Insurance Claims Data
+
+```{r echo=FALSE, warning=FALSE}
+library(tibble)
+```
+
+All of the tables are available when you load **claimsdb**
+
+```{r message=FALSE, warning=FALSE}
+library(dplyr)
+library(claimsdb)
+```
+
+The tables are also available by loading just the data from **claimsdb**
+
+```{r eval=FALSE}
+data(package = "starwarsdb")
+```
+
+This includes a `schema` table that describes each of the tables and the
+included variables from the [CMS
+DE-SynPUF](https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF).
+
+```{r}
+schema
+```
+
+```{r}
+schema %>% 
+  filter(TABLE == "inpatient") %>% 
+  pull(PROPERTIES)
+```
+
+## Local Tables
+
+As an example, you can calculate the *average and median drug costs for
+men and women in 2008* from the sample data in the tables.
+
+```{r}
+rx_costs <- pde %>% 
+  mutate(BENE_YEAR = lubridate::year(SRVC_DT)) %>%  
+  group_by(BENE_YEAR, DESYNPUF_ID) %>% 
+  summarize(TOTAL_RX_COST = sum(TOT_RX_CST_AMT, na.rm = T), .groups = "drop")
+
+bene %>% 
+  transmute(
+    BENE_YEAR,
+    DESYNPUF_ID,
+    BENE_SEX_IDENT = case_when(
+      BENE_SEX_IDENT_CD == "1" ~ "Male",
+      TRUE ~ "Female")
+  ) %>% 
+  left_join(
+    rx_costs, by = c("BENE_YEAR", "DESYNPUF_ID")
+  ) %>% 
+  mutate(TOTAL_RX_COST = ifelse(is.na(TOTAL_RX_COST), 0, TOTAL_RX_COST)) %>% 
+  group_by(BENE_SEX_IDENT) %>% 
+  summarize(
+    MEAN_RX_COST = mean(TOTAL_RX_COST, na.rm = T),
+    MEDIAN_RX_COST = median(TOTAL_RX_COST, na.rm = T))
+```
+
+## Remote Database Tables
+
+Many organizations store claims data in a remote database, so
+**claimsdb** also includes the all of the tables as an in-memory DuckDB
+database. This can be a great way to practice working with this type of
+data, including building queries with dplyr code using
+[dbplyr](https://dbplyr.tidyverse.org/).
+
+```{r}
+con <- claims_connect()
+bene_rmt <- tbl(con, "bene")
+pde_rmt <- tbl(con, "pde")
+pde_rmt
+
+rx_costs_rmt <- pde_rmt %>% 
+  # note below that lubridate functions do not currently work on remote databases,
+  # so you need to use date/time functions appropriate for the database.
+  mutate(BENE_YEAR = date_part('year', SRVC_DT)) %>%  
+  group_by(BENE_YEAR, DESYNPUF_ID) %>% 
+  summarize(TOTAL_RX_COST = sum(TOT_RX_CST_AMT, na.rm = T), .groups = "drop") %>% 
+  ungroup()
+rx_costs_rmt
+
+bene_rmt %>% 
+  transmute(
+    BENE_YEAR,
+    DESYNPUF_ID,
+    BENE_SEX_IDENT = case_when(
+      BENE_SEX_IDENT_CD == "1" ~ "Male",
+      TRUE ~ "Female")
+  ) %>% 
+  left_join(
+    rx_costs_rmt, by = c("BENE_YEAR", "DESYNPUF_ID")
+  ) %>% 
+  mutate(TOTAL_RX_COST = ifelse(is.na(TOTAL_RX_COST), 0, TOTAL_RX_COST)) %>% 
+  group_by(BENE_SEX_IDENT) %>% 
+  summarize(
+    MEAN_RX_COST = mean(TOTAL_RX_COST, na.rm = T),
+    MEDIAN_RX_COST = median(TOTAL_RX_COST, na.rm = T))
+```
