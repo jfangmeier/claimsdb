@@ -26,8 +26,8 @@ status](https://www.r-pkg.org/badges/version/claimsdb)](https://CRAN.R-project.o
 <!-- badges: end -->
 
 **claimsdb** provides easy access to a sample of health insurance
-enrollment and claims data from the [CMS 2008-2010 Data Entrepreneurs'
-Synthetic Public Use File
+enrollment and claims data from the [CMS Data Entrepreneurs' Synthetic
+Public Use File
 (DE-SynPUF)](https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF),
 as a set of relational tables or as an in-memory database using
 [DuckDB](https://duckdb.org). This package is inspired by and based on
@@ -40,8 +40,9 @@ that CMS adopted changes the co-variation across variables, so analysts
 should be cautious about drawing inferences about the actual Medicare
 population.
 
-The data included in **claimsdb** comes from 500 randomly selected
-Medicare beneficiaries from Sample 2 of the DE-SynPUF. CMS provides
+The data included in **claimsdb** comes from 500 randomly selected 2008
+Medicare beneficiaries from Sample 2 of the DE-SynPUF, and it includes
+all the associated claims for these members for 2008-2009. CMS provides
 [resources](https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DESample02),
 including a codebook, FAQ, and other documents with more information
 about this data.
@@ -98,8 +99,9 @@ schema %>%
 
 ## Local Tables
 
-As an example, you can calculate the *average and median drug costs for
-men and women in 2008* from the sample data in the tables.
+As an example, you can calculate the *average and median prescription
+drug costs for men and women in 2008* from the sample data in the
+tables.
 
 ```{r}
 rx_costs <- pde %>% 
@@ -128,7 +130,7 @@ bene %>%
 ## Remote Database Tables
 
 Many organizations store claims data in a remote database, so
-**claimsdb** also includes the all of the tables as an in-memory DuckDB
+**claimsdb** also includes all of the tables as an in-memory DuckDB
 database. This can be a great way to practice working with this type of
 data, including building queries with dplyr code using
 [dbplyr](https://dbplyr.tidyverse.org/).
