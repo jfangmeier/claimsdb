@@ -80,7 +80,7 @@ library(claimsdb)
 The tables are also available by loading just the data from **claimsdb**
 
 ```{r eval=FALSE}
-data(package = "starwarsdb")
+data(package = "claimsdb")
 ```
 
 This includes a `schema` table that describes each of the tables and the
@@ -101,7 +101,7 @@ schema %>%
 
 Using the sample data in the tables, you can ask questions such as,
 *what were the average and median prescription drug costs for men and
-women in 2008?*
+women in 2008 and 2009?*
 
 ```{r}
 rx_costs <- pde %>% 
@@ -121,7 +121,7 @@ bene %>%
     rx_costs, by = c("BENE_YEAR", "DESYNPUF_ID")
   ) %>% 
   mutate(TOTAL_RX_COST = ifelse(is.na(TOTAL_RX_COST), 0, TOTAL_RX_COST)) %>% 
-  group_by(BENE_SEX_IDENT) %>% 
+  group_by(BENE_YEAR, BENE_SEX_IDENT) %>% 
   summarize(
     MEAN_RX_COST = mean(TOTAL_RX_COST, na.rm = T),
     MEDIAN_RX_COST = median(TOTAL_RX_COST, na.rm = T))
@@ -162,7 +162,7 @@ bene_rmt %>%
     rx_costs_rmt, by = c("BENE_YEAR", "DESYNPUF_ID")
   ) %>% 
   mutate(TOTAL_RX_COST = ifelse(is.na(TOTAL_RX_COST), 0, TOTAL_RX_COST)) %>% 
-  group_by(BENE_SEX_IDENT) %>% 
+  group_by(BENE_YEAR, BENE_SEX_IDENT) %>% 
   summarize(
     MEAN_RX_COST = mean(TOTAL_RX_COST, na.rm = T),
     MEDIAN_RX_COST = median(TOTAL_RX_COST, na.rm = T))

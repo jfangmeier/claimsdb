@@ -61,7 +61,7 @@ library(claimsdb)
 The tables are also available by loading just the data from **claimsdb**
 
 ``` r
-data(package = "starwarsdb")
+data(package = "claimsdb")
 ```
 
 This includes a `schema` table that describes each of the tables and the
@@ -105,7 +105,7 @@ schema %>%
 
 Using the sample data in the tables, you can ask questions such as,
 *what were the average and median prescription drug costs for men and
-women in 2008?*
+women in 2008 and 2009?*
 
 ``` r
 rx_costs <- pde %>% 
@@ -125,15 +125,20 @@ bene %>%
     rx_costs, by = c("BENE_YEAR", "DESYNPUF_ID")
   ) %>% 
   mutate(TOTAL_RX_COST = ifelse(is.na(TOTAL_RX_COST), 0, TOTAL_RX_COST)) %>% 
-  group_by(BENE_SEX_IDENT) %>% 
+  group_by(BENE_YEAR, BENE_SEX_IDENT) %>% 
   summarize(
     MEAN_RX_COST = mean(TOTAL_RX_COST, na.rm = T),
     MEDIAN_RX_COST = median(TOTAL_RX_COST, na.rm = T))
-#> # A tibble: 2 x 3
-#>   BENE_SEX_IDENT MEAN_RX_COST MEDIAN_RX_COST
-#>   <chr>                 <dbl>          <dbl>
-#> 1 Female                1205.            375
-#> 2 Male                   917.            155
+#> `summarise()` has grouped output by 'BENE_YEAR'. You can override using the
+#> `.groups` argument.
+#> # A tibble: 4 x 4
+#> # Groups:   BENE_YEAR [2]
+#>   BENE_YEAR BENE_SEX_IDENT MEAN_RX_COST MEDIAN_RX_COST
+#>       <dbl> <chr>                 <dbl>          <dbl>
+#> 1      2008 Female                1147.            270
+#> 2      2008 Male                   878.             90
+#> 3      2009 Female                1264.            405
+#> 4      2009 Male                   956.            230
 ```
 
 ## Remote Database Tables
@@ -202,14 +207,19 @@ bene_rmt %>%
     rx_costs_rmt, by = c("BENE_YEAR", "DESYNPUF_ID")
   ) %>% 
   mutate(TOTAL_RX_COST = ifelse(is.na(TOTAL_RX_COST), 0, TOTAL_RX_COST)) %>% 
-  group_by(BENE_SEX_IDENT) %>% 
+  group_by(BENE_YEAR, BENE_SEX_IDENT) %>% 
   summarize(
     MEAN_RX_COST = mean(TOTAL_RX_COST, na.rm = T),
     MEDIAN_RX_COST = median(TOTAL_RX_COST, na.rm = T))
-#> # Source:   lazy query [?? x 3]
+#> `summarise()` has grouped output by 'BENE_YEAR'. You can override using the
+#> `.groups` argument.
+#> # Source:   lazy query [?? x 4]
 #> # Database: duckdb_connection
-#>   BENE_SEX_IDENT MEAN_RX_COST MEDIAN_RX_COST
-#>   <chr>                 <dbl>          <dbl>
-#> 1 Female                1205.            375
-#> 2 Male                   917.            155
+#> # Groups:   BENE_YEAR
+#>   BENE_YEAR BENE_SEX_IDENT MEAN_RX_COST MEDIAN_RX_COST
+#>       <dbl> <chr>                 <dbl>          <dbl>
+#> 1      2008 Female                1147.            270
+#> 2      2009 Female                1264.            405
+#> 3      2008 Male                   878.             90
+#> 4      2009 Male                   956.            230
 ```
