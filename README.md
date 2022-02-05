@@ -61,7 +61,7 @@ library(claimsdb)
 The tables are also available by loading just the data from **claimsdb**
 
 ``` r
-data(package = "starwarsdb")
+data(package = "claimsdb")
 ```
 
 This includes a `schema` table that describes each of the tables and the
