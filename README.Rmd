@@ -33,7 +33,7 @@ as a set of relational tables or as an in-memory database using
 [DuckDB](https://duckdb.org). This package is inspired by and based on
 the [starwarsdb](https://github.com/gadenbuie/starwarsdb) package.
 
-The data are structured as actual Medicare claims data but is fully
+The data are structured as actual Medicare claims data but are fully
 "synthetic," after a process of alterations meant to reduce the risk of
 re-identification of real Medicare beneficiaries. The synthetic process
 that CMS adopted changes the co-variation across variables, so analysts
@@ -44,7 +44,7 @@ The data included in **claimsdb** comes from 500 randomly selected 2008
 Medicare beneficiaries from Sample 2 of the DE-SynPUF, and it includes
 all the associated claims for these members for 2008-2009. CMS provides
 [resources](https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DESample02),
-including a codebook, FAQ, and other documents with more information
+including a codebook, FAQs, and other documents with more information
 about this data.
 
 [![Source: CMS Linkable 2008–2010 Medicare
@@ -99,9 +99,9 @@ schema %>%
 
 ## Local Tables
 
-As an example, you can calculate the *average and median prescription
-drug costs for men and women in 2008* from the sample data in the
-tables.
+Using the sample data in the tables, you can ask questions such as,
+*what were the average and median prescription drug costs for men and
+women in 2008?*
 
 ```{r}
 rx_costs <- pde %>% 
