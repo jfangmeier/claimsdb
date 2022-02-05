@@ -104,13 +104,8 @@ schema %>%
 ## Local Tables
 
 Using the sample data in the tables, you can ask questions such as,
-<<<<<<< HEAD
 *what were the average and median prescription drug costs for men and
 women in 2008?*
-=======
-*what were average and median prescription drug costs for men and women
-in 2008?*
->>>>>>> b34b544ee71481767eec248b24c25db0e5745fa5
 
 ``` r
 rx_costs <- pde %>% 
